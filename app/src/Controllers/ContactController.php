@@ -12,7 +12,7 @@ class ContactController extends AbstractController {
             return $this->create($request);
         }
         if ($request->getMethod() === 'GET') {
-            return $this->fetchAll($request);
+            return $this->fetchAll();
         }
         return new Response('Method Not Allowed', 405);
     }
@@ -74,10 +74,20 @@ class ContactController extends AbstractController {
         }
     }
 
-    public function fetchAll(Request $request): Response {
+    public function fetchAll(): Response {
+        $directory = __DIR__ . '/../../var/contacts/';
+        $files = glob($directory . '*.json');
         
-        return new Response('', 200);
-    }
+        $contacts = [];
+        foreach ($files as $file) {
+            $contacts[] = json_decode(file_get_contents($file), true);
+        }
 
+        return new Response(
+            json_encode($contacts),
+            200,
+            ['Content-Type' => 'application/json']
+        );
+    }
 
 }
