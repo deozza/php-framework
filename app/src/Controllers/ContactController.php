@@ -7,13 +7,17 @@ use App\Http\Response;
 
 class ContactController extends AbstractController {
 
-    public function process(Request $request): Response {
+    public function process(Request $request, array $params = []): Response {
         if ($request->getMethod() === 'POST') {
             return $this->create($request);
         }
-        if ($request->getMethod() === 'GET') {
+        else if ($request->getMethod() === 'GET' && isset($params['filename'])) {
+            return $this->fetchContact($params['filename']);
+        }
+        else if ($request->getMethod() === 'GET') {
             return $this->fetchAll();
         }
+        
         return new Response('Method Not Allowed', 405);
     }
 
@@ -88,6 +92,21 @@ class ContactController extends AbstractController {
             200,
             ['Content-Type' => 'application/json']
         );
+    }
+
+    public function fetchContact(string $filename): Response {
+        $filePath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($filePath)) {
+            return new Response(
+                json_encode(["error" => "Contact not found"]),
+                404,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        $content = file_get_contents($filePath);
+        return new Response($content, 200, ['Content-Type' => 'application/json']);
     }
 
 }
