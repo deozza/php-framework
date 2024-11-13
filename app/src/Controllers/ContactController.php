@@ -17,6 +17,9 @@ class ContactController extends AbstractController {
         else if ($request->getMethod() === 'GET') {
             return $this->fetchAll();
         }
+        else if ($request->getMethod() === 'PATCH' && isset($params['filename'])) {
+            return $this->patchContact($request ,$params['filename']);
+        }
         
         return new Response('Method Not Allowed', 405);
     }
@@ -107,6 +110,52 @@ class ContactController extends AbstractController {
 
         $content = file_get_contents($filePath);
         return new Response($content, 200, ['Content-Type' => 'application/json']);
+    }
+
+    public function patchContact(Request $request, string $filename): Response {
+        $filePath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($filePath)) {
+            return new Response(
+                json_encode(["error" => "Contact not found"]),
+                404,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        $allow_body = ['email', 'subject', 'message'];
+        $body = $request->getContent();
+
+        
+        foreach($body as $fields => $value) {
+            if (!in_array($fields, $allow_body)){
+                return new Response(
+                    json_encode(["error" => "Invalid JSON"]),
+                    400,
+                    ['Content-Type' => 'application/json']
+                );
+            }
+        }
+
+        $existingContent = json_decode(file_get_contents($filePath), true);
+
+       
+        foreach ($body as $field => $value) {
+            $existingContent[$field] = $value;
+        }
+    
+        
+        $existingContent['dateOfLastUpdate'] = time();
+    
+       
+        file_put_contents($filePath, json_encode($existingContent, JSON_PRETTY_PRINT));
+    
+        
+        return new Response(
+            json_encode($existingContent),
+            200,
+            ['Content-Type' => 'application/json']
+        );
     }
 
 }
