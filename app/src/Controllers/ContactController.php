@@ -20,7 +20,9 @@ class ContactController extends AbstractController {
         else if ($request->getMethod() === 'PATCH' && isset($params['filename'])) {
             return $this->patchContact($request ,$params['filename']);
         }
-        
+        else if ($request->getMethod() === 'DELETE' && isset($params['filename'])) {
+            return $this->deleteContact($params['filename']);
+        }
         return new Response('Method Not Allowed', 405);
     }
 
@@ -156,6 +158,24 @@ class ContactController extends AbstractController {
             200,
             ['Content-Type' => 'application/json']
         );
+    }
+
+    public function deleteContact(string $filename): Response {
+        $filePath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($filePath)) {
+            return new Response(
+                json_encode(["error" => "Contact not found"]),
+                404,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        if (unlink($filePath)) {
+            return new Response("", 204);
+        } else {
+            return new Response(json_encode(["error" => "Delete error"]), 500);
+        }
     }
 
 }
