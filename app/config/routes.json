@@ -19,9 +19,10 @@
     "methods": ["POST"],
     "controller": "PostArtistController"
   },
+
   {
     "path": "/contact",
-    "methods": ["POST"],
+    "methods": ["POST", "GET"],
     "controller": "ContactController"
   }
 ]

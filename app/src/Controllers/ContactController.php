@@ -9,13 +9,23 @@ use DateTime;
 class ContactController extends AbstractController {
 
     public function process(Request $request): Response {
+        if ($request->getMethod() === 'POST') {
+            return $this->handlePost($request);
+        } elseif ($request->getMethod() === 'GET') {
+            return $this->handleGet();
+        }
+
+        return new Response(json_encode(['error' => 'Method not allowed']), 405, ['Content-Type' => 'application/json']);
+    }
+
+    private function handlePost(Request $request): Response {
         // check if the request content type is application/json
         $headers = $request->getHeaders();
         if ($headers['Content-Type'] !== 'application/json') {
             return new Response(json_encode(['error' => 'Invalid Content-Type']), 400, ['Content-Type' => 'application/json']);
         }
 
-        //set the data to check in the request body
+        // set the data to check in the request body
         $data = json_decode($request->getBody(), true);
 
         // check request body
@@ -34,14 +44,26 @@ class ContactController extends AbstractController {
             'dateOfLastUpdate' => $timestamp
         ];
 
-        
         $directory = __DIR__ . "/../../var/contacts";
-        
 
-        // save the contact to dedicated file
+        
+        // save the contact to a dedicated file
         file_put_contents("{$directory}/{$filename}", json_encode($fileContent));
 
-        // send the response 
+        // send the response
         return new Response(json_encode(['file' => $filename]), 201, ['Content-Type' => 'application/json']);
+    }
+
+    private function handleGet(): Response {
+        $directory = __DIR__ . "/../../var/contacts";
+        $files = glob("{$directory}/*.json");
+        $contacts = [];
+
+        foreach ($files as $file) {
+            $content = json_decode(file_get_contents($file), true);
+            $contacts[] = $content;
+        }
+
+        return new Response(json_encode($contacts), 200, ['Content-Type' => 'application/json']);
     }
 }
