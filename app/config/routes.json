@@ -1,22 +1,27 @@
 [
-    {
-        "path": "/test",
-        "methods": ["GET"],
-        "controller": "TestController"
-    },
-    {
-        "path": "/artist/:id",
-        "methods": ["GET"],
-        "controller": "GetArtistController"
-    },
-    {
-        "path": "/artists",
-        "methods": ["GET"],
-        "controller": "GetArtistsController"
-    },
-    {
-        "path": "/artists",
-        "methods": ["POST"],
-        "controller": "PostArtistController"
-    }
+  {
+    "path": "/test",
+    "methods": ["GET"],
+    "controller": "TestController"
+  },
+  {
+    "path": "/artist/:id",
+    "methods": ["GET"],
+    "controller": "GetArtistController"
+  },
+  {
+    "path": "/artists",
+    "methods": ["GET"],
+    "controller": "GetArtistsController"
+  },
+  {
+    "path": "/artists",
+    "methods": ["POST"],
+    "controller": "PostArtistController"
+  },
+  {
+    "path": "/contact",
+    "methods": ["POST"],
+    "controller": "ContactController"
+  }
 ]

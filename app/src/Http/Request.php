@@ -71,4 +71,10 @@ class Request
     {
         return $this->payload;
     }   
+
+    public function getBody(): string
+    {
+        return file_get_contents('php://input');    
+    }
+    
 }
