@@ -12,6 +12,11 @@ class ContactController extends AbstractController {
         if ($request->getMethod() === 'POST') {
             return $this->handlePost($request);
         } elseif ($request->getMethod() === 'GET') {
+            $path = $request->getPath();
+            if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
+                $email = $matches[1];
+                return $this->handleGetSpecific($email);
+            }
             return $this->handleGet();
         }
 
@@ -65,5 +70,17 @@ class ContactController extends AbstractController {
         }
 
         return new Response(json_encode($contacts), 200, ['Content-Type' => 'application/json']);
+    }
+
+    private function handleGetSpecific(string $email): Response {
+        $directory = __DIR__ . "/../../var/contacts";
+        $files = glob("{$directory}/*_{$email}.json");
+
+        if (empty($files)) {
+            return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
+        }
+
+        $content = json_decode(file_get_contents($files[0]), true);
+        return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
     }
 }

@@ -7,7 +7,7 @@ class Request
     protected string $uri;
     protected string $path;
     protected string $method;
-    protected array $slugs;
+    protected array $slugs = [];
     protected array $urlParams;
     protected array $headers;
     protected string $payload;
@@ -50,11 +50,7 @@ class Request
 
     public function getSlug(string $key): string
     {
-        if(!isset($this->slugs[$key])) {
-            return '';
-        }
-        
-        return $this->slugs[$key];
+        return $this->slugs[$key] ?? '';
     }
 
     public function getUrlParams(): array
