@@ -5,11 +5,12 @@ namespace App\Controllers;
 use App\Http\Request;
 use App\Http\Response;
 
-class PostContactController extends AbstractController
+class ContactController extends AbstractController
 {
   public function process(Request $request): Response
   {
 
+    // Post contact form
     $data = json_decode($request->getPayload(), true);
 
     // Validate request body
