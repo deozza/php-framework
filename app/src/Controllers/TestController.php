@@ -10,6 +10,9 @@ class TestController extends AbstractController {
 
 
     public function process(Request $request): Response {
-        return new Response('Test Controller');
+        return $this->render('test', [
+            'title' => 'Pouet',
+            'items' => ['foo', 'bar', 'baz'],
+        ]);;
     }
 }
