@@ -1,4 +1,5 @@
 [
+
   {
     "path": "/test",
     "methods": ["GET"],
@@ -30,3 +31,4 @@
     "controller": "ContactController"
   }
 ]
+
