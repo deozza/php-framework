@@ -7,15 +7,26 @@ use App\Http\Response;
 
 class ContactController extends AbstractController {
 
-    public function process(Request $request): Response{
-        if ($request->getMethod() === 'POST') {
-            return $this->PostContact($request);
+    public function process(Request $request): Response {
+        $uriFile = explode('/', trim($request->getUri(), '/'));
+    
+        
+        if ($uriFile[0] === 'contact') {
+            if ($request->getMethod() === 'POST') {
+                return $this->PostContact($request);
+            }
+    
+            if ($request->getMethod() === 'GET') {
+                if (isset($uriFile[1])) {  
+                    return $this->getContactByFilename($request, $uriFile[1]);
+                }
+                return $this->getContacts($request);
+            }
         }
-        if ($request->getMethod() === 'GET') {
-            return $this->getContacts($request);
-        }
+    
         return new Response('Method not allowed', 405);
     }
+    
     public function PostContact(Request $request): Response
     {
         if ($request-> getMethod() !== 'POST') {
@@ -60,23 +71,34 @@ class ContactController extends AbstractController {
         ['Content-Type' => 'application/json']
         );
     }
-public function getContacts(Request $request): Response {
-    if ($request->getMethod() !== 'GET') {
-        return new Response('Method not allowed', 405);
-    }
-
-    $ContactPath = __DIR__ . '/../../var/contacts';
-    $contacts = [];
-
-    foreach (scandir($ContactPath) as $file) {
-        if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
-            $filePath = $ContactPath . '/' . $file;
-            $contact = json_decode(file_get_contents($filePath), true);
-            if ($contact) {
-                $contacts[] = $contact;
-         }
+    public function getContacts(Request $request): Response {
+        if ($request->getMethod() !== 'GET') {
+            return new Response('Method not allowed', 405);
         }
+
+        $ContactPath = __DIR__ . '/../../var/contacts';
+        $contacts = [];
+
+        foreach (scandir($ContactPath) as $file) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === 'json') {
+                $filePath = $ContactPath . '/' . $file;
+                $contact = json_decode(file_get_contents($filePath), true);
+                if ($contact) {
+                    $contacts[] = $contact;
+            }
+            }
+        }
+        return new Response(json_encode($contacts, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
     }
-    return new Response(json_encode($contacts, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
-}
+
+    public function getContactByFilename(Request $request, string $filename): Response {
+        $ContactPath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($ContactPath)) {
+            return new Response('File not found', 404);
+        }
+
+        $contactData = json_decode(file_get_contents($ContactPath), true);
+        return new Response(json_encode($contactData, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
+    }
 }
