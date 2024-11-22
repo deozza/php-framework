@@ -21,5 +21,11 @@
         "path": "/contact/{filename}",
         "methods":["GET"],
         "controller": "ContactController"
+    },
+
+    {
+        "path": "/contact/{filename}",
+        "methods":["PATCH"],
+        "controller": "ContactController"
     }
 ]

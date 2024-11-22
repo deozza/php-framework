@@ -22,6 +22,9 @@ class ContactController extends AbstractController {
                 }
                 return $this->getContacts($request);
             }
+            if ($request->getMethod() === 'PATCH') {
+                return $this->updateContact($request);
+            }
         }
     
         return new Response('Method not allowed', 405);
@@ -101,4 +104,43 @@ class ContactController extends AbstractController {
         $contactData = json_decode(file_get_contents($ContactPath), true);
         return new Response(json_encode($contactData, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
     }
+
+    public function updateContact(Request $request): Response {
+       
+        $uriFile = explode('/', trim($request->getUri(), '/'));
+        $filename = $uriFile[1];
+
+        if (!$filename){
+            return new Response('File not found',404);
+        }
+
+        $filepath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($filepath)) {
+            return new Response('File not found', 404);
+        }
+
+        $body = json_decode(file_get_contents('php://input'), true);
+
+        $requiredBody = ['email', 'subject', 'message'];
+        $invalidBody = array_diff($requiredBody, array_keys($body));
+
+        if ($invalidBody){
+            return new Response(json_encode(['error' => 'Invalid request body'. implode(', ', $invalidBody)]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        $contactData = json_decode(file_get_contents($filepath), true);
+
+        foreach ($body as $key => $value) {
+            $contactData[$key] = $value;
+        }
+
+        $contactData['dateOfLastUpdate'] = time();
+
+        file_put_contents($filepath, json_encode($contactData, JSON_PRETTY_PRINT));
+
+        return new Response(json_encode($contactData, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
+    }
+        
+    
 }
