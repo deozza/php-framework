@@ -9,14 +9,9 @@ class Request {
     private string $body;
 
     public function __construct() {
-        // URI et méthode HTTP
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->method = $_SERVER['REQUEST_METHOD'];
-
-        // Récupère les en-têtes HTTP
         $this->headers = getallheaders();
-
-        // Récupère le corps brut de la requête (utile pour POST/PUT)
         $this->body = file_get_contents('php://input');
     }
 
@@ -33,14 +28,13 @@ class Request {
     }
 
     public function getHeader(string $name): ?string {
-        // Recherche d'un en-tête insensible à la casse
         $name = strtolower($name);
         foreach ($this->headers as $key => $value) {
             if (strtolower($key) === $name) {
                 return $value;
             }
         }
-        return null; // Retourne null si l'en-tête n'existe pas
+        return null;
     }
 
     public function getBody(): string {
