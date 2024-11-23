@@ -160,10 +160,10 @@ class ContactController extends AbstractController {
         }
 
         if (!unlink($filepath)) {
-            return new Response('Failed to delete file', 500);
+            return new Response('Failed to delete file', 404);
         }
 
-        return new Response('File deleted successfully', 200);
+        return new Response('File deleted successfully', 204);
     }
         
     
