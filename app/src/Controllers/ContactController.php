@@ -18,6 +18,12 @@ class ContactController extends AbstractController {
                 return $this->handleGetSpecific($email);
             }
             return $this->handleGet();
+        } elseif ($request->getMethod() === 'PATCH') {
+            $path = $request->getPath();
+            if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
+                $email = $matches[1];
+                return $this->handlePatch($request, $email);
+            }
         }
 
         return new Response(json_encode(['error' => 'Method not allowed']), 405, ['Content-Type' => 'application/json']);
@@ -81,6 +87,47 @@ class ContactController extends AbstractController {
         }
 
         $content = json_decode(file_get_contents($files[0]), true);
+        return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
+    }
+
+    private function handlePatch(Request $request, string $email): Response {
+        $directory = __DIR__ . "/../../var/contacts";
+        $files = glob("{$directory}/*_{$email}.json");
+
+        if (empty($files)) {
+            return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
+        }
+
+        $filePath = $files[0];
+        $content = json_decode(file_get_contents($filePath), true);
+
+        // check if the request content type is application/json
+        $headers = $request->getHeaders();
+        if ($headers['Content-Type'] !== 'application/json') {
+            return new Response(json_encode(['error' => 'Invalid Content-Type']), 400, ['Content-Type' => 'application/json']);
+        }
+
+        // set the data to check in the request body
+        $data = json_decode($request->getBody(), true);
+
+        // validate request body
+        $allowedKeys = ['email', 'subject', 'message'];
+        foreach ($data as $key => $value) {
+            if (!in_array($key, $allowedKeys)) {
+                return new Response(json_encode(['error' => 'Invalid request body']), 400, ['Content-Type' => 'application/json']);
+            }
+        }
+
+        // update the contact file content
+        foreach ($data as $key => $value) {
+            $content[$key] = $value;
+        }
+        $content['dateOfLastUpdate'] = (new DateTime())->getTimestamp();
+
+        // save the updated contact to the file
+        file_put_contents($filePath, json_encode($content));
+
+        // send the response
         return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
     }
 }
