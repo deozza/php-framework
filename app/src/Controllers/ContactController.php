@@ -14,21 +14,21 @@ class ContactController extends AbstractController {
         } elseif ($request->getMethod() === 'GET') {
             $path = $request->getPath();
             if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
-                $email = $matches[1];
-                return $this->handleGetSpecific($email);
+                $filename = $matches[1];
+                return $this->handleGetSpecific($filename);
             }
             return $this->handleGet();
         } elseif ($request->getMethod() === 'PATCH') {
             $path = $request->getPath();
             if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
-                $email = $matches[1];
-                return $this->handlePatch($request, $email);
+                $filename = $matches[1];
+                return $this->handlePatch($request, $filename);
             }
         } elseif ($request->getMethod() === 'DELETE') {
             $path = $request->getPath();
             if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
-                $email = $matches[1];
-                return $this->handleDelete($email);
+                $filename = $matches[1];
+                return $this->handleDelete($filename);
             }
         }
 
@@ -88,27 +88,26 @@ class ContactController extends AbstractController {
         return new Response(json_encode($contacts), 200, ['Content-Type' => 'application/json']);
     }
 
-    private function handleGetSpecific(string $email): Response {
+    private function handleGetSpecific(string $filename): Response {
         $directory = __DIR__ . "/../../var/contacts";
-        $files = glob("{$directory}/*_{$email}.json");
+        $filePath = "{$directory}/{$filename}.json";
 
-        if (empty($files)) {
+        if (!file_exists($filePath)) {
             return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
         }
 
-        $content = json_decode(file_get_contents($files[0]), true);
+        $content = json_decode(file_get_contents($filePath), true);
         return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
     }
 
-    private function handlePatch(Request $request, string $email): Response {
+    private function handlePatch(Request $request, string $filename): Response {
         $directory = __DIR__ . "/../../var/contacts";
-        $files = glob("{$directory}/*_{$email}.json");
+        $filePath = "{$directory}/{$filename}.json";
 
-        if (empty($files)) {
+        if (!file_exists($filePath)) {
             return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
         }
 
-        $filePath = $files[0];
         $content = json_decode(file_get_contents($filePath), true);
 
         // check if the request content type is application/json
@@ -141,15 +140,14 @@ class ContactController extends AbstractController {
         return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
     }
 
-    private function handleDelete(string $email): Response {
+    private function handleDelete(string $filename): Response {
         $directory = __DIR__ . "/../../var/contacts";
-        $files = glob("{$directory}/*_{$email}.json");
+        $filePath = "{$directory}/{$filename}.json";
 
-        if (empty($files)) {
+        if (!file_exists($filePath)) {
             return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
         }
 
-        $filePath = $files[0];
         unlink($filePath);
 
         return new Response('', 204, ['Content-Type' => 'application/json']);
