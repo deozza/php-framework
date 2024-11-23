@@ -24,6 +24,12 @@ class ContactController extends AbstractController {
                 $email = $matches[1];
                 return $this->handlePatch($request, $email);
             }
+        } elseif ($request->getMethod() === 'DELETE') {
+            $path = $request->getPath();
+            if (preg_match('/^\/contact\/(.+)$/', $path, $matches)) {
+                $email = $matches[1];
+                return $this->handleDelete($email);
+            }
         }
 
         return new Response(json_encode(['error' => 'Method not allowed']), 405, ['Content-Type' => 'application/json']);
@@ -57,7 +63,11 @@ class ContactController extends AbstractController {
 
         $directory = __DIR__ . "/../../var/contacts";
 
-        
+        // ensure the directory exists
+        if (!is_dir($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
         // save the contact to a dedicated file
         file_put_contents("{$directory}/{$filename}", json_encode($fileContent));
 
@@ -129,5 +139,19 @@ class ContactController extends AbstractController {
 
         // send the response
         return new Response(json_encode($content), 200, ['Content-Type' => 'application/json']);
+    }
+
+    private function handleDelete(string $email): Response {
+        $directory = __DIR__ . "/../../var/contacts";
+        $files = glob("{$directory}/*_{$email}.json");
+
+        if (empty($files)) {
+            return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
+        }
+
+        $filePath = $files[0];
+        unlink($filePath);
+
+        return new Response('', 204, ['Content-Type' => 'application/json']);
     }
 }
