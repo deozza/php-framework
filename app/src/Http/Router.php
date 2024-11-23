@@ -2,25 +2,67 @@
 
 namespace App\Http;
 
-use App\Controllers\AbstractController;
 use App\Http\Request;
 
-class Router {
-    public function route(Request $request): Response {
-        foreach(self::getConfig() as $route) {
-            if(self::checkUri($request, $route) === false){
-                continue;
-            }
-        
-            if(self::checkMethod($request, $route) === false){
-                continue;
-            }
+class Router
+{
+    public function route(Request $request): ?Response {
+        $route = self::getRouteFromRequest($request);
 
-            $controller = self::getController($route);
-            return $controller->process($request);
+        if(empty($route)) {
+            return new Response('Not found', 404, ['Content-Type' => 'text/plain']);
         }
 
-        return new Response('Not found', 404);
+        if($this->checkMethod($request, $route) === false) {
+            return new Response('Method not allowed', 405, ['Content-Type' => 'text/plain']);
+        }
+
+        $controller = 'App\\Controllers\\' . $route->controller;
+        $controller = new $controller();
+        return $controller->process($request);
+    }
+
+    private function getRouteFromRequest(Request $request): ?object{
+        $routes = self::getConfig();
+        foreach ($routes as $route) {
+            if (self::urlMatches($request, $route)) {
+                return $route;
+            }
+        }
+        return null;
+    }
+
+    private static function urlMatches(Request $request, object $route): bool {
+        $requestUriParts = self::getUrlParts($request->getPath());
+        $routePathParts = self::getUrlParts($route->path);
+
+        if(self::checkUrlPartsNumberMatches($requestUriParts, $routePathParts) === false) {
+            return false;
+        }
+
+        foreach($routePathParts as $key => $part) {
+            if(self::isUrlPartSlug($part) === false) {
+                if($part !== $requestUriParts[$key]) {
+                    return false;
+                }
+            }else{
+                $request->addSlug(substr($part, 1), $requestUriParts[$key]);
+            }
+        }
+
+        return true;
+    }
+
+    private static function getUrlParts(string $url): array {
+        return explode('/', trim($url, '/'));
+    }
+
+    private static function checkUrlPartsNumberMatches(array $requestUriParts, array $routePathParts): bool {
+        return count($requestUriParts) === count($routePathParts);
+    }
+
+    private static function isUrlPartSlug(string $part): bool {
+        return strpos($part, ':') === 0;
     }
 
     private static function getConfig(): array {
@@ -30,33 +72,5 @@ class Router {
 
     private static function checkMethod(Request $request, object $route): bool {
         return in_array($request->getMethod(), $route->methods);
-    }
-
-    private static function checkUri(Request $request, object $route): bool {
-        return $route->path === $request->getUri();
-    }
-
-    private static function getController(object $route): AbstractController {
-        $controllerNamespace = "App\\Controllers\\" . $route->controller;
-
-        if(self::checkClassExists($controllerNamespace) === false){
-            throw new \Exception("Controller not found");
-        }
-
-        $controller = new $controllerNamespace();
-
-        if(self::checkControllerInstance($controller) === false){
-            throw new \Exception("Controller not found");
-        }
-
-        return new $controllerNamespace();
-    }
-
-    private static function checkClassExists(string $controllerNamespace): bool {
-        return class_exists($controllerNamespace);
-    }
-
-    private static function checkControllerInstance(AbstractController $controller): bool {
-        return $controller instanceof AbstractController;
     }
 }
