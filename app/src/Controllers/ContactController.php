@@ -19,6 +19,8 @@ class ContactController extends AbstractController
         return $this->getSpecificContact($request);
       case 'POST':
         return $this->postContact($request);
+      case 'PATCH':
+        return $this->updateContact($request);
       default:
         return new Response('Method not allowed', 405, ['Content-Type' => 'text/plain']);
     }
@@ -36,7 +38,7 @@ class ContactController extends AbstractController
 
     $directory = __DIR__ . '/../../var/contacts';
 
-    // Hadge Case : si répertoire pas déjà créé, retourne une erreur, donc création si inexistant
+    // Edge Case : si répertoire pas déjà créé, retourne une erreur, donc création si inexistant
     if (!is_dir($directory)) {
       mkdir($directory, 0777, true);
     }
@@ -92,6 +94,41 @@ class ContactController extends AbstractController
 
         $content_file = file_get_contents($files[0]);
         $contact = json_decode($content_file, true);
+
+        return new Response(json_encode($contact), 200, ['Content-Type' => 'application/json']);
+    }
+
+    private function updateContact(Request $request): Response
+    {
+        $email = $request->getSlug('email');
+        $directory = __DIR__ . '/../../var/contacts/';
+        $filePath = $directory . '*' . $email . '.json';
+
+        $files = glob($filePath);
+
+        if (empty($files)) {
+            return new Response(json_encode(['error' => 'Contact form not found']), 404, ['Content-Type' => 'application/json']);
+        }
+
+        $content_file = file_get_contents($files[0]);
+        $contact = json_decode($content_file, true);
+
+        $body = json_decode($request->getPayload(), true);
+
+        $bodyFieldAllowed = ['email', 'subject', 'message'];
+
+        foreach ($body as $field => $value) {
+            if (!in_array($field, $bodyFieldAllowed)) {
+                return new Response(json_encode(['error' => 'Invalid body field']), 400, ['Content-Type' => 'application/json']);
+            }
+        }
+
+        $contact['email'] = $body['email'] ?? $contact['email'];
+        $contact['subject'] = $body['subject'] ?? $contact['subject'];
+        $contact['message'] = $body['message'] ?? $contact['message'];
+        $contact['dateOfLastUpdate'] = time();
+
+        file_put_contents($files[0], json_encode($contact));
 
         return new Response(json_encode($contact), 200, ['Content-Type' => 'application/json']);
     }
