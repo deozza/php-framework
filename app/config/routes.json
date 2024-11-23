@@ -6,7 +6,7 @@
     },
     {
         "path": "/contact",
-        "methods": ["POST"],
+        "methods": ["GET", "POST"],
         "controller": "ContactController"
     }
 ]
