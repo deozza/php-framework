@@ -14,7 +14,15 @@ class ContactController extends AbstractController {
         }
 
         if ($request->getMethod() === 'GET') {
-            return $this->handleGet();
+            $uri = $request->getUri();
+            $parts = explode('/', $uri);
+            $email = end($parts);
+
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->handleGetByEmail($email);
+            } else {
+                return $this->handleGet($request);
+            }
         }
 
         return new Response('Contact Controller');
@@ -55,5 +63,16 @@ class ContactController extends AbstractController {
         }
 
         return new Response(json_encode($contacts), 200);
+    }
+
+    private function getContactByEmail(string $email): ?array {
+        $filepath = __DIR__ . "/../../var/contacts/*_{$email}.json";
+        $files = glob($filepath);
+
+        if (empty($files)) {
+            return null;
+        }
+
+        return json_decode(file_get_contents($files[0]), true);
     }
 }
