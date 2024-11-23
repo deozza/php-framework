@@ -33,8 +33,10 @@ class Router {
     }
 
     private static function checkUri(Request $request, object $route): bool {
-        return $route->path === $request->getUri();
+        $pattern = preg_replace('/{[^}]+}/', '[^/]+', $route->path); // Remplace {param} par une regex
+        return preg_match("#^$pattern$#", $request->getUri());
     }
+    
 
     private static function getController(object $route): AbstractController {
         $controllerNamespace = "App\\Controllers\\" . $route->controller;

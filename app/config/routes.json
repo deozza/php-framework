@@ -3,5 +3,35 @@
         "path": "/test",
         "methods": ["GET"],
         "controller": "TestController"
+    },
+
+    {
+        "path": "/contact",
+        "methods":["POST"],
+        "controller": "ContactController"
+    },
+
+    {
+        "path": "/contact",
+        "methods":["GET"],
+        "controller": "ContactController"
+    },
+
+    {
+        "path": "/contact/{filename}",
+        "methods":["GET"],
+        "controller": "ContactController"
+    },
+
+    {
+        "path": "/contact/{filename}",
+        "methods":["PATCH"],
+        "controller": "ContactController"
+    },
+
+    {
+        "path": "/contact/{filename}",
+        "methods":["DELETE"],
+        "controller": "ContactController"
     }
 ]
