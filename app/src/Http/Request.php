@@ -37,9 +37,10 @@ class Request
         return $this->method;
     }
 
-    public function addSlug(string $key, string $value): self {
+    public function addSlug(string $key, string $value): self
+    {
         $this->slugs[$key] = $value;
-        
+
         return $this;
     }
 
@@ -50,10 +51,10 @@ class Request
 
     public function getSlug(string $key): string
     {
-        if(!isset($this->slugs[$key])) {
+        if (!isset($this->slugs[$key])) {
             return '';
         }
-        
+
         return $this->slugs[$key];
     }
 
@@ -70,5 +71,5 @@ class Request
     public function getPayload(): string
     {
         return $this->payload;
-    }   
+    }
 }
