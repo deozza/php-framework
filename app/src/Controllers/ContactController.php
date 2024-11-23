@@ -25,6 +25,9 @@ class ContactController extends AbstractController {
             if ($request->getMethod() === 'PATCH') {
                 return $this->updateContact($request);
             }
+            if ($request->getMethod() === 'DELETE') {
+                return $this->deleteContact($request);
+            }
         }
     
         return new Response('Method not allowed', 405);
@@ -140,6 +143,27 @@ class ContactController extends AbstractController {
         file_put_contents($filepath, json_encode($contactData, JSON_PRETTY_PRINT));
 
         return new Response(json_encode($contactData, JSON_PRETTY_PRINT), 200, ['Content-Type' => 'application/json']);
+    }
+
+    public function deleteContact(Request $request): Response {
+        $uriFile = explode('/', trim($request->getUri(),'/'));
+        $filename = $uriFile[1] ?? null;
+
+        if (!$filename){
+            return new Response('File not found',404);
+        }
+
+        $filepath = __DIR__ . '/../../var/contacts/' . $filename . '.json';
+
+        if (!file_exists($filepath)) {
+            return new Response('File not found', 404);
+        }
+
+        if (!unlink($filepath)) {
+            return new Response('Failed to delete file', 500);
+        }
+
+        return new Response('File deleted successfully', 200);
     }
         
     
