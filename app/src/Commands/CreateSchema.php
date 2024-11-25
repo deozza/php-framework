@@ -48,7 +48,7 @@ class CreateSchema extends AbstractCommand {
                 continue;
             }
 
-            if(!is_subclass_of($className, 'App\\Managers\\AbstractManager')) {
+            if(!is_subclass_of($className, 'App\\Lib\\Managers\\AbstractManager')) {
                 continue;
             }
 

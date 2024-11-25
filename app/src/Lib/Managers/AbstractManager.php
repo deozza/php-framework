@@ -4,6 +4,7 @@ namespace App\Lib\Managers;
 
 use App\Lib\Database\DatabaseConnexion;
 use App\Lib\Database\Dsn;
+use App\Lib\Entities\AbstractEntity;
 
 abstract class AbstractManager
 {
@@ -55,17 +56,29 @@ abstract class AbstractManager
     }
 
     public function queryBuilder(): self {
-        $this->queryString = "SELECT";
+        $this->queryString = "";
         return $this;
     }
 
     public function select(...$fields): self {
+        $this->queryString .= "SELECT";
+
         if(count($fields) === 0) {
             $this->queryString .= ' *';
             return $this;
         }
 
         $this->queryString .= ' ' . implode(', ', $fields);
+        return $this;
+    }
+
+    public function insert(AbstractEntity $entity): self {
+        $this->queryString .= "INSERT INTO {$this->getTable()} ({$this->getFields($entity)})";
+        return $this;
+    }
+
+    public function values(AbstractEntity $entity): self {
+        $this->queryString .= " VALUES ({$this->getValues($entity)})";
         return $this;
     }
 
@@ -134,12 +147,8 @@ abstract class AbstractManager
         return $this->findOneBy(['id' => $id]);
     }
 
-    public function findAll() {
-        $this->queryBuilder()
-            ->select()
-            ->from(substr($this->getTable(), 0, 1))
-            ->executeQuery()
-            ->getAllResults();
+    public function findAll(): array {
+        return $this->findBy([]);
     }
 
     public function findBy(array $criteria) {
@@ -177,7 +186,7 @@ abstract class AbstractManager
         }
 
         $data = $this->executeQuery()
-            ->getAllResults();
+            ->getOneResult();
 
         if($data === false) {
             return null;
@@ -187,8 +196,13 @@ abstract class AbstractManager
     }
 
     public function save(AbstractEntity $entity): string {
-        $this->executeQuery("INSERT INTO {$this->getTable()} ({$this->getFields($entity)}) VALUES ({$this->getValues($entity)})", $entity->toArray());
+        $this->queryBuilder()
+        ->insert($entity)
+        ->values($entity)
+        ->setParams($entity->toArray())
+        ;
 
+        $this->executeQuery();
         return $this->db->getConnexion()->lastInsertId();
     }
 

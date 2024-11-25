@@ -20,7 +20,7 @@ if (!class_exists($commandClassName)) {
 
 $commandInstance = new $commandClassName();
 
-if(!is_subclass_of($commandInstance, 'App\Commands\AbstractCommand')) {
+if(!is_subclass_of($commandInstance, 'App\Lib\Commands\AbstractCommand')) {
     echo 'Command not found' . PHP_EOL;
     exit(1);
 } 

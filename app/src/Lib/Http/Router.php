@@ -7,28 +7,41 @@ use App\Lib\Http\Request;
 class Router
 {
     public function route(Request $request): ?Response {
-        $route = self::getRouteFromRequest($request);
+        $routesByUri = self::getRoutesFromUriRequest($request);
 
-        if(empty($route)) {
+        if(empty($routesByUri)) {
             return new Response('Not found', 404, ['Content-Type' => 'text/plain']);
         }
 
-        if($this->checkMethod($request, $route) === false) {
+        $routeByMethod = self::getRoutesFromMethodRequest($request, $routesByUri);
+
+        if(empty($routeByMethod)) {
             return new Response('Method not allowed', 405, ['Content-Type' => 'text/plain']);
         }
 
-        $controller = 'App\\Controllers\\' . $route->controller;
+        $controller = 'App\\Controllers\\' . $routeByMethod->controller;
         $controller = new $controller();
         return $controller->process($request);
     }
 
-    private function getRouteFromRequest(Request $request): ?object{
+    private static function getRoutesFromUriRequest(Request $request): array{
+        $matchingRoutes = [];
         $routes = self::getConfig();
         foreach ($routes as $route) {
-            if (self::urlMatches($request, $route)) {
+            if (self::urlMatches($request, $route) && self::checkMethod($request, $route)) {
+                $matchingRoutes[] = $route;
+            }
+        }
+        return $matchingRoutes;
+    }
+
+    private static function getRoutesFromMethodRequest(Request $request, array $routes): ?object {
+        foreach($routes as $route) {
+            if(self::checkMethod($request, $route)) {
                 return $route;
             }
         }
+        
         return null;
     }
 
