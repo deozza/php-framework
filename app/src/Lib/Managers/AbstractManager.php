@@ -77,6 +77,16 @@ abstract class AbstractManager
         return $this;
     }
 
+    public function delete(): self {
+        $this->queryString .= "DELETE";
+        return $this;
+    }
+
+    public function updateTable(): self {
+        $this->queryString .= "UPDATE {$this->getTable()}";
+        return $this;
+    }
+
     public function values(AbstractEntity $entity): self {
         $this->queryString .= " VALUES ({$this->getValues($entity)})";
         return $this;
@@ -129,6 +139,7 @@ abstract class AbstractManager
 
     public function executeQuery(): self {
         $this->query = $this->db->getConnexion()->prepare($this->queryString);
+
         $this->query->execute($this->params);
         return $this;
     }
@@ -155,7 +166,7 @@ abstract class AbstractManager
         $this->queryBuilder()
             ->select()
             ->from(substr($this->getTable(), 0, 1))
-            ;
+        ;
 
         $this->addWhereAccordingToCriterias($criteria);
 
@@ -192,11 +203,23 @@ abstract class AbstractManager
         }
     }
 
+    public function set(AbstractEntity $entity): self {
+
+        $this->queryString .= " SET";
+        foreach ($entity->toArray() as $key => $value) {
+            $this->queryString .= " $key = :$key,";
+        }
+
+        $this->queryString = rtrim($this->queryString, ',');
+
+        return $this;
+    }
+
     public function save(AbstractEntity $entity): string {
         $this->queryBuilder()
-        ->insert($entity)
-        ->values($entity)
-        ->setParams($entity->toArray())
+            ->insert($entity)
+            ->values($entity)
+            ->setParams($entity->toArray())
         ;
 
         $this->executeQuery();
@@ -204,10 +227,22 @@ abstract class AbstractManager
     }
 
     public function update(AbstractEntity $entity) {
-        $this->executeQuery("UPDATE {$this->getTable()} SET {$this->getUpdateFields($entity)} WHERE id = :id", array_merge($entity->toArray(), ['id' => $entity->getId()]));
+        $this->queryBuilder()
+            ->updateTable()
+            ->as(substr($this->getTable(), 0, 1))
+            ->set($entity)
+            ->where('id', self::CONDITIONS['eq'])
+            ->setParams($entity->toArray())
+            ->executeQuery();
+        $this->executeQuery();
     }
 
-    public function delete(AbstractEntity $entity) {
-        $this->executeQuery("DELETE FROM {$this->getTable()} WHERE id = :id", ['id' => $entity->getId()]);;
+    public function remove(AbstractEntity $entity) {
+        $this->queryBuilder()
+            ->delete()
+            ->from($this->getTable())
+            ->where('id', self::CONDITIONS['eq'])
+            ->addParam('id', $entity->getId())
+            ->executeQuery();
     }
 }

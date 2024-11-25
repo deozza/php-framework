@@ -12,6 +12,11 @@
   - [Step 6](#step-6)
   - [Step 7](#step-7)
   - [Step 8](#step-8)
+  - [Step 9](#step-9)
+  - [Step 10](#step-10)
+  - [Step 11](#step-11)
+  - [Step 12](#step-12)
+  - [Step 13](#step-13)
 
 ## Step 1
 
@@ -62,3 +67,25 @@ The purpose of a router is to manage all the incoming requests from clients and 
 ## Step 8
 
 **Objective :** create a universal response object all controllers must return
+
+## Step 9
+
+**Objective :** create a reusable connexion to a mysql database
+
+**Objective :** build an interface in order to send request to the database
+
+## Step 10
+
+**Objective :** create a way to interact with the application through the terminal console
+
+## Step 11
+
+**Objective :** refactor the app to group everything related to the framework behaviour in a dedicated lib folder
+
+## Step 12
+
+**Objective :** improve the ORM to build sql queries with small and modular functions
+
+## Step 13
+
+**Objective :** modify the controllers to let them render HTML views
