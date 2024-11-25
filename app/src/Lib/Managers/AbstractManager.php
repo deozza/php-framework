@@ -157,14 +157,7 @@ abstract class AbstractManager
             ->from(substr($this->getTable(), 0, 1))
             ;
 
-        foreach($criteria as $key => $value) {
-            if(strpos($this->queryString, 'WHERE') === false) {
-                $this->where($key, self::CONDITIONS['eq']);
-            } else {
-                $this->andWhere($key, self::CONDITIONS['eq']);
-            }
-            $this->addParam($key, $value);
-        }
+        $this->addWhereAccordingToCriterias($criteria);
 
         return $this->executeQuery()
             ->getAllResults();
@@ -176,14 +169,7 @@ abstract class AbstractManager
             ->from(substr($this->getTable(), 0, 1))
             ;
 
-        foreach($criteria as $key => $value) {
-            if(strpos($this->queryString, 'WHERE') === false) {
-                $this->where($key, self::CONDITIONS['eq']);
-            } else {
-                $this->andWhere($key, self::CONDITIONS['eq']);
-            }
-            $this->addParam($key, $value);
-        }
+        $this->addWhereAccordingToCriterias($criteria);
 
         $data = $this->executeQuery()
             ->getOneResult();
@@ -193,6 +179,17 @@ abstract class AbstractManager
         }
 
         return $data;
+    }
+
+    private function addWhereAccordingToCriterias(array $criterias) {
+        foreach($criterias as $key => $value) {
+            if(strpos($this->queryString, 'WHERE') === false) {
+                $this->where($key, self::CONDITIONS['eq']);
+            } else {
+                $this->andWhere($key, self::CONDITIONS['eq']);
+            }
+            $this->addParam($key, $value);
+        }
     }
 
     public function save(AbstractEntity $entity): string {
