@@ -12,5 +12,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Apache
 RUN a2enmod rewrite
 RUN service apache2 restart
+RUN mkdir -p /var/www/html/var/contacts && chown -R www-data: /var/www/html/var/contacts
 
 EXPOSE 80
