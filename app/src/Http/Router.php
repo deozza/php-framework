@@ -33,8 +33,19 @@ class Router {
     }
 
     private static function checkUri(Request $request, object $route): bool {
-        return $route->path === $request->getUri();
+        $pattern = preg_replace('#<(\w+)>#', '(?P<$1>[^/]+)', $route->path);
+        $pattern = "#^" . $pattern . "$#";
+    
+        if (preg_match($pattern, $request->getUri(), $matches)) {
+            // Supprime les captures globales et garde seulement les groupes nommés
+            $args = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+            $request->setArgs($args);
+            return true;
+        }
+    
+        return false;
     }
+    
 
     private static function getController(object $route): AbstractController {
         $controllerNamespace = "App\\Controllers\\" . $route->controller;
