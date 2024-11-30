@@ -1,9 +1,10 @@
 {
-    "name": "root/html",
+    "name": "root/php-framework",
+    "description": "projet",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "App\\": "app/src/"
         }
     },
     "require": {}

@@ -1,7 +1,12 @@
 [
     {
-        "path": "/test",
+        "path": "/contact",
+        "methods": ["POST"],
+        "controller": "ContactController@storeContact"
+    },
+    {
+        "path": "/contact",
         "methods": ["GET"],
-        "controller": "TestController"
+        "controller": "ContactController@getAllContacts"
     }
 ]
