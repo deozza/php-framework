@@ -10,4 +10,4 @@ $request = new Request();
 $router = new Router();
 $response = $router->route($request);
 
-echo $response->getContent();
+$response->send();

@@ -10,7 +10,8 @@ class Response {
     public function __construct(string $content = '', int $status = 200, array $headers = []) {
         $this->content = $content;
         $this->status = $status;
-        $this->headers = $headers;
+        //now returns application/json by default (je viens de me rendre compte que c'est pas la meilleure des idées de faire ça mais bon)
+        $this->headers = array_merge(['Content-Type' => 'application/json'], $headers);
     }
 
     public function setStatus(int $status): self {
@@ -23,7 +24,7 @@ class Response {
     }
 
     public function setHeaders(array $headers): self {
-        $this->headers = $headers;
+        $this->headers = array_merge(['Content-Type' => 'application/json'], $headers);
         return $this;
     }
 
@@ -43,5 +44,14 @@ class Response {
 
     public function getContent(): string {
         return $this->content;
+    }
+
+    //function to return the status code (jvais pleurer)
+    public function send(): void {
+        http_response_code($this->status);
+        foreach ($this->headers as $header => $value) {
+            header("{$header}: {$value}");
+        }
+        echo $this->content;
     }
 }

@@ -7,12 +7,12 @@ use App\Http\Request;
 
 class Router {
     public function route(Request $request): Response {
-        foreach(self::getConfig() as $route) {
-            if(self::checkUri($request, $route) === false){
+        foreach (self::getConfig() as $route) {
+            if (self::checkUri($request, $route) === false) {
                 continue;
             }
-        
-            if(self::checkMethod($request, $route) === false){
+
+            if (self::checkMethod($request, $route) === false) {
                 continue;
             }
 
@@ -20,7 +20,7 @@ class Router {
             return $controller->process($request);
         }
 
-        return new Response('Not found', 404);
+        return new Response(json_encode(['error' => 'Not found']), 404);
     }
 
     private static function getConfig(): array {
@@ -33,7 +33,13 @@ class Router {
     }
 
     private static function checkUri(Request $request, object $route): bool {
-        return $route->path === $request->getUri();
+        $path = $route->path;
+        $uri = $request->getUri();
+
+        $path = preg_replace('/:\w+/', '([^/]+)', $path);
+        $path = str_replace('/', '\/', $path);
+
+        return preg_match('/^' . $path . '$/', $uri);
     }
 
     private static function getController(object $route): AbstractController {
@@ -49,7 +55,7 @@ class Router {
             throw new \Exception("Controller not found");
         }
 
-        return new $controllerNamespace();
+        return $controller;
     }
 
     private static function checkClassExists(string $controllerNamespace): bool {
@@ -58,5 +64,19 @@ class Router {
 
     private static function checkControllerInstance(AbstractController $controller): bool {
         return $controller instanceof AbstractController;
+    }
+
+    //made some changes for the program to be more "POO" (J'AI COMPRIS EDENN ENFIN)
+    public static function extractParams(string $uri, string $path): array {
+        $params = [];
+        $path = preg_replace('/:\w+/', '([^/]+)', $path);
+        $path = str_replace('/', '\/', $path);
+
+        if (preg_match('/^' . $path . '$/', $uri, $matches)) {
+            array_shift($matches);
+            $params = $matches;
+        }
+
+        return $params;
     }
 }
