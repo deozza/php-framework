@@ -1,0 +1,7 @@
+{
+  "host": "php-framework-db",
+  "user": "root",
+  "password": "password",
+  "database": "spotify",
+  "port": 3306
+}
