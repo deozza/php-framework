@@ -20,6 +20,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 6](#étape-6)
   - [Étape 7](#étape-7)
   - [Étape 8](#étape-8)
+  - [Étape 9](#étape-9)
 <!--toc:end-->
 
 ## Étape 0
@@ -92,3 +93,14 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - y ajouter un fichier `app/src/Database/Dsn.php` pour paramétrer la connexion à la bdd
 - ajouter un fichier de configuration `app/config/database.json` pour y stocker les informations de connexion à la bdd
   - **!** ce fichier ne doit pas être commit dans un vrai projet
+
+## Étape 9
+
+**Objectif** : permettre de lancer des commandes dans le terminal
+
+- sera utile pour créer la base de données par exemple
+- créer un fichier `app/bin/console.php` qui fonctionnera comme un routeur mais dans le terminal pour les commandes
+  - les commandes devront être lancées avec `php console.php -c <nom-de-la-commande>`
+- créer un dossier `app/src/Commands` pour y stocker toutes les futures commandes
+- créer un fichier `app/src/Commands/AbstractCommand.php` qui se basera sur le `Command pattern` et servira de base à toutes les futures commandes
+- créer un fichier `app/src/Commands/CreateDatabase.php`
