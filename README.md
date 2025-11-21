@@ -14,6 +14,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 0](#étape-0)
   - [Étape 1](#étape-1)
   - [Étape 2](#étape-2)
+  - [Étape 3](#étape-3)
 <!--toc:end-->
 
 ## Étape 0
