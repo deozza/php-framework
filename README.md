@@ -15,6 +15,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 1](#étape-1)
   - [Étape 2](#étape-2)
   - [Étape 3](#étape-3)
+  - [Étape 4](#étape-4)
 <!--toc:end-->
 
 ## Étape 0
@@ -46,3 +47,11 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - créer un dossier `app/src/Http` : il contiendra toutes les fonctionnalités du framework liées aux requêtes HTTP
 - y ajouter un fichier `app/src/Http/Request.php` avec le code d'`index.php`
 - lancer la commande `composer init` pour pouvoir utiliser l'`autoload.php` de composer et charger dynamiquement les classes
+
+## Étape 4
+
+**Objectif** : préparer le routeur
+
+- créer un dossier `app/config` : il contiendra tous les fichiers de configuration nécessaires au fonctionnement du framework
+- y ajouter un fichier `app/config/routes.json` : on y enregistrera les configurations de nos endpoints
+- modifier le fichier `app/src/index.php` pour accorder l'accès ou non aux endpoints en fonction du fichier `app/config/routes.json`
