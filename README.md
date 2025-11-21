@@ -11,6 +11,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 <!--toc:start-->
 - [PHP Framework](#php-framework)
   - [Sommaire](#sommaire)
+  - [Étape 0](#étape-0)
   - [Étape 1](#étape-1)
   - [Étape 2](#étape-2)
 <!--toc:end-->
@@ -30,3 +31,9 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - créer un dossier `app/src` : il contiendra l'intégralité du code PHP du framework
 - y déplacer le fichier `index.php`
 - créer un fichier `app/.htaccess` pour y écrire les règles de redirection
+
+## Étape 2
+
+**Objectif** : récupérer les informations de la requête pour qu'on puisse la traiter
+
+- modifier le fichier `app/src/index.php` avec les fonctions nécessaires 
