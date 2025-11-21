@@ -55,3 +55,10 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - créer un dossier `app/config` : il contiendra tous les fichiers de configuration nécessaires au fonctionnement du framework
 - y ajouter un fichier `app/config/routes.json` : on y enregistrera les configurations de nos endpoints
 - modifier le fichier `app/src/index.php` pour accorder l'accès ou non aux endpoints en fonction du fichier `app/config/routes.json`
+
+## Étape 5
+
+**Objectif** : compléter le routeur avec une classe dédiée
+
+- créer un fichier `app/src/Http/Router.php`
+- y déplacer le code de `app/src/index.php`

@@ -1,25 +1,15 @@
 <?php
 
 use App\Http\Request;
+use App\Http\Router;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$request = new Request();
-
-$routesConfigPath = __DIR__ . '/../config/routes.json';
-
-$routes = json_decode(file_get_contents($routesConfigPath), true);
-
-foreach($routes as $route) {
-    if($route['path'] !== $request->getUri()) {
-        continue;
-    }
-
+try {
     
-    if($route['method'] !== $request->getMethod()) {
-        continue;
-    }
+    $request = new Request();
+    echo Router::route($request);
 
-    echo $route['controller'];
+} catch(\Exception $e) {
+    echo $e->getMessage();
 }
-
