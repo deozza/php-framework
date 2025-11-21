@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace App\Lib\Http;
 
 class Request {
     private string $uri;

@@ -2,30 +2,59 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$inputs = getopt('c:');
+use App\Lib\Commands\AbstractCommand;
 
-if(!isset($inputs['c'])) {
-    echo 'You must provide a command to execute' . PHP_EOL;
+try {
+    $commandName = getInput();
+    
+    $commandInstance = getCommandInstance($commandName);
+
+    checkCommandInstance($commandInstance);
+    
+    $commandInstance->execute();
+    
+    exit(0);
+} catch(\Exception $e) {
+    echo $e->getMessage();
     exit(1);
 }
 
-$command = $inputs['c'];
-$commandClassName = 'App\\Commands\\' . $command;
+function getInput(): string {
+    $inputs = getopt('c:');
 
-if(class_exists($commandClassName) == false) {
-    echo 'Command not found' . PHP_EOL;
-    exit(1);
+    if(!isset($inputs['c'])) {
+        throw new \Exception('You must provide a command to execute' . PHP_EOL);
+    }
+
+    return $inputs['c'];
+    
 }
 
-$commandInstance = new $commandClassName();
-
-if(is_subclass_of($commandInstance, 'App\Commands\AbstractCommand') === false) {
-    echo 'Command not found' . PHP_EOL;
-    exit(1);
+function getCommandLibPrefix(): string {
+    return 'App\\Lib\\Commands\\';
 }
 
+function getCommandPrefix(): string {
+    return 'App\\Commands\\';
+}
 
-$commandInstance->execute();
-exit(0);
+function getCommandInstance(string $commandName): AbstractCommand {
+    if(class_exists(getCommandLibPrefix() . $commandName)) {
+        return new (getCommandLibPrefix() . $commandName)();
+    }
+
+    if(class_exists(getCommandPrefix() . $commandName)) {
+        return new (getCommandPrefix() . $commandName)();
+    }
+
+    throw new \Exception('Command not found');
+}
+
+function checkCommandInstance($commandInstance): void {
+    if(is_subclass_of($commandInstance, AbstractCommand::class) === false) {
+        throw new \Exception('Command not found 2' . PHP_EOL);
+    }
+}
+
 
 ?>

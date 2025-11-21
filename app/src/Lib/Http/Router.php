@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http;
+namespace App\Lib\Http;
 
-use App\Controllers\AbstractController;
+use App\Lib\Controllers\AbstractController;
 
 
 class Router {
 
     const string CONTROLLER_NAMESPACE_PREFIX = "App\\Controllers\\";
-    const string ROUTE_CONFIG_PATH = __DIR__ . '/../../config/routes.json';
+    const string ROUTE_CONFIG_PATH = __DIR__ . '/../../../config/routes.json';
+    
 
     public static function route(Request $request): Response {
         $config = self::getConfig();
