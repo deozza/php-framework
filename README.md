@@ -19,6 +19,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 5](#étape-5)
   - [Étape 6](#étape-6)
   - [Étape 7](#étape-7)
+  - [Étape 8](#étape-8)
 <!--toc:end-->
 
 ## Étape 0
@@ -80,3 +81,14 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 
 - créer un fichier `app/src/Http/Response.php` avec la configuration pour une réponse HTTP
 - faire en sorte que les controllers et le routeur retournent une instance de `Response.php`
+
+## Étape 8
+
+**Objectif** : permettre la connexion à une database
+
+- modifier le fichier `docker-compose.yml` pour y inclure un service MySQL
+- créer un dossier `app/src/Database` pour y stocker les fonctionnalités liées à la connexion à la base de données
+- y ajouter un fichier `app/src/Database/DatabaseConnexion.php` pour créer une connexion à la bdd
+- y ajouter un fichier `app/src/Database/Dsn.php` pour paramétrer la connexion à la bdd
+- ajouter un fichier de configuration `app/config/database.json` pour y stocker les informations de connexion à la bdd
+  - **!** ce fichier ne doit pas être commit dans un vrai projet
