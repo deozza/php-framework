@@ -8,7 +8,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 try {
     
     $request = new Request();
-    echo Router::route($request);
+    $controller = Router::route($request);
+    $controller->process($request);
 
 } catch(\Exception $e) {
     echo $e->getMessage();
