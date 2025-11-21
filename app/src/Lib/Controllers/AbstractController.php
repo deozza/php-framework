@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Lib\Controllers;
 
-use App\Http\Request;
-use App\Http\Response;
+use App\Lib\Http\Request;
+use App\Lib\Http\Response;
 
 abstract class AbstractController {
     public abstract function process(Request $request): Response;

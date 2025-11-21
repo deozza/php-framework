@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\Commands;
+namespace App\Lib\Commands;
 
-use App\Database\DatabaseConnexion;
-use App\Database\Dsn;
+use App\Lib\Database\DatabaseConnexion;
+use App\Lib\Database\Dsn;
 
 
 class CreateDatabase extends AbstractCommand {

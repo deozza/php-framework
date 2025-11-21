@@ -21,6 +21,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 7](#étape-7)
   - [Étape 8](#étape-8)
   - [Étape 9](#étape-9)
+  - [Étape 10](#étape-10)
 <!--toc:end-->
 
 ## Étape 0
@@ -104,3 +105,10 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - créer un dossier `app/src/Commands` pour y stocker toutes les futures commandes
 - créer un fichier `app/src/Commands/AbstractCommand.php` qui se basera sur le `Command pattern` et servira de base à toutes les futures commandes
 - créer un fichier `app/src/Commands/CreateDatabase.php`
+
+## Étape 10
+
+**Objectif** : séparer les classes métiers des classes techniques
+
+- toutes les classes liées au fonctionnement du framework doivent aller dans un dossier `app/src/Lib`
+- toutes les autres restent dans `app/src`
