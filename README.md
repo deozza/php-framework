@@ -18,6 +18,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 4](#étape-4)
   - [Étape 5](#étape-5)
   - [Étape 6](#étape-6)
+  - [Étape 7](#étape-7)
 <!--toc:end-->
 
 ## Étape 0
@@ -72,3 +73,10 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 - créer un dossier `app/src/Controllers` : on y stockera les controllers
 - créer un fichier `app/src/Controllers/AbstractController.php` : il servira de modèle à tous les futurs controllers
 - adapter `app/src/Http/Router.php` pour qu'il instancie une classe controller et l'exécute
+
+## Étape 7
+
+**Objectif** : renvoyer une objet Response
+
+- créer un fichier `app/src/Http/Response.php` avec la configuration pour une réponse HTTP
+- faire en sorte que les controllers et le routeur retournent une instance de `Response.php`

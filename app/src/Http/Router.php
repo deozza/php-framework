@@ -10,15 +10,16 @@ class Router {
     const string CONTROLLER_NAMESPACE_PREFIX = "App\\Controllers\\";
     const string ROUTE_CONFIG_PATH = __DIR__ . '/../../config/routes.json';
 
-    public static function route(Request $request): AbstractController {
+    public static function route(Request $request): Response {
         $config = self::getConfig();
 
         foreach($config as $route) {
             if(self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
                 continue;
             }
-            
-            return self::getControllerInstance($route['controller']);
+
+            $controller = self::getControllerInstance($route['controller']);
+            return $controller->process($request);
         }
 
         throw new \Exception('Route not found', 404);
