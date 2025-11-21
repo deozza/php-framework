@@ -14,6 +14,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
   - [Étape 0](#étape-0)
   - [Étape 1](#étape-1)
   - [Étape 2](#étape-2)
+  - [Étape 3](#étape-3)
 <!--toc:end-->
 
 ## Étape 0
@@ -37,3 +38,11 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 **Objectif** : récupérer les informations de la requête pour qu'on puisse la traiter
 
 - modifier le fichier `app/src/index.php` avec les fonctions nécessaires 
+
+## Étape 3
+
+**Objectif** : extraire le code précédent dans une classe
+
+- créer un dossier `app/src/Http` : il contiendra toutes les fonctionnalités du framework liées aux requêtes HTTP
+- y ajouter un fichier `app/src/Http/Request.php` avec le code d'`index.php`
+- lancer la commande `composer init` pour pouvoir utiliser l'`autoload.php` de composer et charger dynamiquement les classes
