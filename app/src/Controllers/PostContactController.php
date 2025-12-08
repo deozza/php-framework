@@ -6,15 +6,13 @@ use App\Lib\Controllers\AbstractController;
 use App\Lib\Http\Request;
 use App\Lib\Http\Response;
 use App\Entities\Contact;
+use App\Lib\Managers\ContactManager;
 
 class PostContactController extends AbstractController
 {
 
     public function process(Request $request): Response
     {
-        $body = json_decode($request->getBody(), true);
-        $allowedFields = ['email', 'subject', 'message'];
-
 
         if ($request->checkMethod('POST') === false) {
             return new Response(json_encode(['error' => 'Method Not Allowed']), 405, ['Content-Type' => 'application/json']);
@@ -33,17 +31,20 @@ class PostContactController extends AbstractController
             return new Response(json_encode(['error' => 'Invalid fields in request body']), 400, ['Content-Type' => 'application/json']);
         }
 
-        $timestamp = time();
+        foreach ($allowedFields as $field) {
+            if (!array_key_exists($field, $body)) {
+                return new Response(json_encode(['error' => "Missing field: $field"]), 400, ['Content-Type' => 'application/json']);
+            }
+        }
+
         $contact = new Contact(
             $body['email'],
             $body['subject'],
             $body['message'],
         );
 
-        $filename = "{$timestamp}_{$body['email']}.json";
-        $filepath = __DIR__ . '/../../var/contacts/' . $filename;
-
-        $contact->SaveToFile($filepath);
-        return new Response(json_encode(["file" => date('Y-m-d_H-i-s', $timestamp) . "_{$body['email']}.json"]), 201, ['Content-Type' => 'application/json']);
+        $contactManager = new ContactManager();
+        $filename = $contactManager->saveContact($contact);
+        return new Response(json_encode(["file" => $filename]), 201, ['Content-Type' => 'application/json']);
     }
 }

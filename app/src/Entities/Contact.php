@@ -25,17 +25,10 @@ class Contact
             'email' => $this->email,
             'subject' => $this->subject,
             'message' => $this->message,
-            'DateOfCreation' => $this->dateOfCreation,
-            'DateOfLastUpdate' => $this->dateOfLastUpdate,
+            'dateOfCreation' => $this->dateOfCreation,
+            'dateOfLastUpdate' => $this->dateOfLastUpdate,
         ];
     }
-
-    public function saveToFile(string $filepath): void
-    {
-        $data = json_encode($this->toArray(), JSON_PRETTY_PRINT);
-        file_put_contents($filepath, $data);
-    }
-
 
     public function getEmail(): string
     {
