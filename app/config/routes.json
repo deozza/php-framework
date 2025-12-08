@@ -8,5 +8,25 @@
     "path": "/foobarr",
     "method": "GET",
     "controller": "FoobarrController"
+  },
+  {
+    "path": "/contact",
+    "method": "POST",
+    "controller": "ContactController"
+  },
+  {
+    "path": "/contact",
+    "method": "GET",
+    "controller": "ContactController"
+  },
+  {
+    "path": "/contact/{params}",
+    "method": "GET",
+    "controller": "ContactController"
+  },
+  {
+  "path": "/contact/{params}",
+    "method": "PATCH",
+    "controller": "ContactController"
   }
 ]

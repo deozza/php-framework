@@ -3,23 +3,45 @@
 namespace App\Lib\Http;
 
 use App\Lib\Controllers\AbstractController;
+use App\Controllers\ContactController;
 
 
 class Router {
-
-    const string CONTROLLER_NAMESPACE_PREFIX = "App\\Controllers\\";
-    const string ROUTE_CONFIG_PATH = __DIR__ . '/../../../config/routes.json';
+    const CONTROLLER_NAMESPACE_PREFIX = "App\\Controllers\\";
+    const ROUTE_CONFIG_PATH = __DIR__ . '/../../../config/routes.json';
     
 
     public static function route(Request $request): Response {
         $config = self::getConfig();
 
         foreach($config as $route) {
-            if(self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
+            if(self::checkMethod($request, $route) === false) {
+                continue;
+            }
+
+            $uriCheck = self::checkUri($request, $route);
+            if($uriCheck === false) {
                 continue;
             }
 
             $controller = self::getControllerInstance($route['controller']);
+
+            if ($route['controller'] === 'ContactController' && $request->getUri() === '/contact') {
+                if ($request->getMethod() === 'GET') {
+                    return $controller->getAll($request);
+                } elseif ($request->getMethod() === 'POST') {
+                    return $controller->process($request);
+                }
+            }
+
+            if ($route['controller'] === 'ContactController' && $route['path'] === '/contact/{params}' && $request->getMethod() === 'GET') {
+                return $controller->getContact($request, $uriCheck);
+            }
+
+            if ($route['controller'] === 'ContactController' && $route['path'] === '/contact/{params}' && $request->getMethod() === 'PATCH') {
+                return $controller->update($request, $uriCheck);
+            }
+
             return $controller->process($request);
         }
 
@@ -38,11 +60,20 @@ class Router {
         return $request->getMethod() === $route['method'];
     }
 
-    private static function checkUri(Request $request, array $route): bool {
-        return $request->getUri() === $route['path'];
+    private static function checkUri(Request $request, array $route) {
+        $routePath = $route['path'];
+        $uri = $request->getUri();
+
+        if (strpos($routePath, '{params}') !== false) {
+            $pattern = str_replace('{params}', '([^/]+)', $routePath);
+            if (preg_match('#^' . $pattern . '$#', $uri, $matches)) {
+                return $matches[1]; // valeur capturée
+            }
+            return false;
+        }
+        return $uri === $routePath ? true : false;
     }
-    
-    private static function getControllerInstance(string $controller): AbstractController {
+    private static function getControllerInstance(string $controller) {
         $controllerClass = self::CONTROLLER_NAMESPACE_PREFIX . $controller;
 
         if(class_exists($controllerClass) === false) {
