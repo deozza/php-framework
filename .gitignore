@@ -1,1 +1,6 @@
 app/vendor
+mysql/
+log/
+app/var/contacts/
+vendor/
+*.env
