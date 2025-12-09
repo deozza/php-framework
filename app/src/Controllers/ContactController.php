@@ -176,4 +176,25 @@ class ContactController extends AbstractController
             ['Content-Type' => 'application/json']
         );
     }
+
+    public function delete(Request $request, $params): Response
+    {
+        $filepath = self::STORAGE_PATH . '/' . $params;
+        
+        if (!file_exists($filepath)) {
+            return new Response(
+                '{"error": "Contact not found"}',
+                404,
+                ['Content-Type' => 'application/json']
+            );
+        }
+
+        unlink($filepath);
+
+        return new Response(
+            '',
+            204,
+            ['Content-Type' => 'application/json']
+        );
+    }
 }

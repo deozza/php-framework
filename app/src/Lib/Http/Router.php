@@ -42,6 +42,10 @@ class Router {
                 return $controller->update($request, $uriCheck);
             }
 
+            if ($route['controller'] === 'ContactController' && $route['path'] === '/contact/{params}' && $request->getMethod() === 'DELETE') {
+                return $controller->delete($request, $uriCheck);
+            }
+
             return $controller->process($request);
         }
 
