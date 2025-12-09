@@ -23,5 +23,10 @@
     "path": "/contact/:id",
     "method": "GET",
     "controller": "GetSingleContactController"
+  },
+  {
+    "path": "/contact/:id",
+    "method": "PATCH",
+    "controller": "UpdateContactController"
   }
 ]
