@@ -1,1 +1,4 @@
 app/vendor
+log/
+mysql/
+var/
