@@ -28,5 +28,10 @@
     "path": "/contact/:id",
     "method": "PATCH",
     "controller": "UpdateContactController"
+  },
+  {
+    "path": "/contact/:id",
+    "method": "DELETE",
+    "controller": "DeleteContactController"
   }
 ]
