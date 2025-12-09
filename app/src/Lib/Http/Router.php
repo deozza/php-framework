@@ -5,17 +5,19 @@ namespace App\Lib\Http;
 use App\Lib\Controllers\AbstractController;
 
 
-class Router {
+class Router
+{
 
     const string CONTROLLER_NAMESPACE_PREFIX = "App\\Controllers\\";
     const string ROUTE_CONFIG_PATH = __DIR__ . '/../../../config/routes.json';
-    
 
-    public static function route(Request $request): Response {
+
+    public static function route(Request $request): Response
+    {
         $config = self::getConfig();
 
-        foreach($config as $route) {
-            if(self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
+        foreach ($config as $route) {
+            if (self::checkMethod($request, $route) === false || self::checkUri($request, $route) === false) {
                 continue;
             }
 
@@ -25,8 +27,9 @@ class Router {
 
         throw new \Exception('Route not found', 404);
     }
-    
-    private static function getConfig(): array {
+
+    private static function getConfig(): array
+    {
         $routesConfigContent = file_get_contents(self::ROUTE_CONFIG_PATH);
         $routesConfig = json_decode($routesConfigContent, true);
 
@@ -34,28 +37,53 @@ class Router {
     }
 
 
-    private static function checkMethod(Request $request, array $route): bool {
+    private static function checkMethod(Request $request, array $route): bool
+    {
         return $request->getMethod() === $route['method'];
     }
 
-    private static function checkUri(Request $request, array $route): bool {
-        return $request->getUri() === $route['path'];
+    private static function checkUri(Request $request, array $route): bool
+    {
+        // On récupère juste le chemin sans la query string
+        $requestPath = parse_url($request->getUri(), PHP_URL_PATH);
+        $routePath   = $route['path'];
+
+        $requestParts = explode('/', trim($requestPath, '/'));
+        $routeParts   = explode('/', trim($routePath, '/'));
+
+        if (count($requestParts) !== count($routeParts)) {
+            return false;
+        }
+
+        foreach ($routeParts as $index => $routePart) {
+            $requestPart = $requestParts[$index];
+
+            if (preg_match('/^{[^}]+}$/', $routePart)) {
+                continue;
+            }
+
+            if ($routePart !== $requestPart) {
+                return false;
+            }
+        }
+
+        return true;
     }
-    
-    private static function getControllerInstance(string $controller): AbstractController {
+
+    private static function getControllerInstance(string $controller): AbstractController
+    {
         $controllerClass = self::CONTROLLER_NAMESPACE_PREFIX . $controller;
 
-        if(class_exists($controllerClass) === false) {
+        if (class_exists($controllerClass) === false) {
             throw new \Exception('Route not found', 404);
         }
 
         $controllerInstance = new $controllerClass();
 
-        if(is_subclass_of($controllerInstance, AbstractController::class)=== false){
+        if (is_subclass_of($controllerInstance, AbstractController::class) === false) {
             throw new \Exception('Route not found', 404);
         }
-        
+
         return $controllerInstance;
     }
-
 }

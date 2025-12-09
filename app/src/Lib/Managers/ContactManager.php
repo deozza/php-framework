@@ -48,4 +48,17 @@ class ContactManager
 
         return $responseFilename;
     }
+
+    public function getContactByFilename(string $filename): ?array
+    {
+        $filePath = $this->directory . '/' . $filename . '.json';
+
+        if (!file_exists($filePath)) {
+            return null;
+        }
+
+        $contactData = json_decode(file_get_contents($filePath), true);
+
+        return $contactData;
+    }
 }
