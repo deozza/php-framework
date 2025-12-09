@@ -18,5 +18,10 @@
     "path": "/contact",
     "method": "GET",
     "controller": "GetContactController"
+  },
+  {
+    "path": "/contact/:id",
+    "method": "GET",
+    "controller": "GetSingleContactController"
   }
 ]

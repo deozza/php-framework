@@ -39,9 +39,28 @@ class Router {
     }
 
     private static function checkUri(Request $request, array $route): bool {
-        return $request->getUri() === $route['path'];
+         $requestUri = trim($request->getUri(), '/');
+    $routeUri = trim($route['path'], '/');
+
+    $requestParts = explode('/', $requestUri);
+    $routeParts = explode('/', $routeUri);
+
+    if (count($requestParts) !== count($routeParts)) {
+        return false;
     }
-    
+
+    foreach ($routeParts as $i => $part) {
+        if (str_starts_with($part, ':')) {
+            continue;
+        }
+
+        if ($part !== $requestParts[$i]) {
+            return false;
+        }
+    }
+
+    return true;
+}   
     private static function getControllerInstance(string $controller): AbstractController {
         $controllerClass = self::CONTROLLER_NAMESPACE_PREFIX . $controller;
 
