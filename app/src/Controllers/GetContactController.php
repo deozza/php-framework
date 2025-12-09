@@ -8,48 +8,41 @@ use App\Lib\Http\Response;
 
 class GetContactController extends AbstractController
 {
-  public function process(Request $request): Response
-{
-    $headers = $request->getHeaders();
-    $headersLower = array_change_key_case($headers, CASE_LOWER);
-    $contentType = $headersLower['content-type'] ?? null;
+    public function process(Request $request): Response
+    {
+        if ($request->getMethod() !== 'GET') {
+            return new Response(
+                json_encode(['error' => 'Only GET method is accepted']),
+                405,
+                ['Content-Type' => 'application/json']
+            );
+        }
 
-    if ($contentType === null || stripos($contentType, 'application/json') !== 0) {
+        $directory = __DIR__ . '/../../var/contacts/';
+
+        if (!is_dir($directory)) {
+            return new Response(
+                json_encode(['error' => 'Contacts directory not found']),
+                500,
+                ['Content-Type' => 'application/json']
+            );
+        }
+        $files = glob($directory . '*.json');
+
+        $contacts = [];
+
+        foreach ($files as $filePath) {
+            $content = file_get_contents($filePath);
+            $data = json_decode($content, true);
+
+            if (is_array($data)) {
+                $contacts[] = $data;
+            }
+        }
         return new Response(
-            json_encode(['error' => 'Only application/json is accepted']),
-            400,
+            json_encode($contacts, JSON_PRETTY_PRINT),
+            200,
             ['Content-Type' => 'application/json']
         );
     }
-    $rawBody = file_get_contents('php://input');
-    $data = json_decode($rawBody, true);
-
-    if (!is_array($data) || !isset($data['file'])) {
-        return new Response(
-            json_encode(['error' => 'Missing file field']),
-            400,
-            ['Content-Type' => 'application/json']
-        );
-    }
-    $fileName = basename($data['file']);
-    $filePath = __DIR__ . '/../../var/contacts/' . $fileName;
-
-    if (!file_exists($filePath)) {
-        return new Response(
-            json_encode(['error' => 'Contact not found']),
-            404,
-            ['Content-Type' => 'application/json']
-        );
-    }
-
-    $content = file_get_contents($filePath);
-
-    return new Response(
-        $content,
-        200,
-        ['Content-Type' => 'application/json']
-    );
 }
-
-}
-
