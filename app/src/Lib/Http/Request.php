@@ -54,4 +54,14 @@ class Request
     {
         return $this->method === $method;
     }
+
+    public function getPath(): string
+    {
+        return parse_url($this->uri, PHP_URL_PATH) ?? '/';
+    }
+
+    public function getPathSegments(): array
+    {
+        return explode('/', trim($this->getPath(), '/'));
+    }
 }

@@ -17,9 +17,8 @@ class UpdateContactController extends AbstractController
             return new Response(json_encode(['error' => 'Method Not Allowed']), 405, ['Content-Type' => 'application/json']);
         }
 
-        $path = parse_url($request->getUri(), PHP_URL_PATH);
-        $uriCut = explode('/', trim($path, '/'));
-        $filename = $uriCut[1];
+        $segments = $request->getPathSegments();
+        $filename = $segments[1] ?? null;
 
         if ($filename === null || $filename === '') {
             return new Response(json_encode(['error' => 'Filename is missing']), 400, ['Content-Type' => 'application/json']);
