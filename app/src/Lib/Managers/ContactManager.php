@@ -90,4 +90,15 @@ class ContactManager
 
         return $contactData;
     }
+
+    public function deleteContact(string $filename): bool
+    {
+        $filePath = $this->directory . '/' . $filename . '.json';
+
+        if (!file_exists($filePath)) {
+            return false;
+        }
+
+        return unlink($filePath);
+    }
 }
