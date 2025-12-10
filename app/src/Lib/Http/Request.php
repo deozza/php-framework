@@ -15,7 +15,7 @@ class Request
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->headers = getallheaders();
 
-        if ($this->method === 'POST') {
+        if ($this->method === 'POST' || $this->method === 'PUT' || $this->method === 'PATCH') {
             $this->body = file_get_contents('php://input');
         }
     }
