@@ -30,12 +30,10 @@ function Delete-Contact-Override {
     Invoke-RestMethod -Uri ("http://127.0.0.1:8080/contact?filename=$enc&_method=DELETE") -Method POST
 }
 
-# Example run
 Write-Output 'POST creating contact...'
 $created = Post-Contact -email 'leia@alderaan.com' -subject 'Help me Obi Wan' -message 'You are my only hope'
 Write-Output ($created | ConvertTo-Json)
 
-# Use the returned file name (formatted) if necessary
 $file = $created.file
 Write-Output ('Returned filename: ' + $file)
 
