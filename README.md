@@ -112,3 +112,7 @@ On pourra utiliser ce framework pour créer des API ou des applications monolith
 
 - toutes les classes liées au fonctionnement du framework doivent aller dans un dossier `app/src/Lib`
 - toutes les autres restent dans `app/src`
+
+
+
+/// remarue: pour compiler ==> $body = @{email="azer.jouini@ecole-decode.fr"; subject="Question"; message="Bonjour"} | ConvertTo-Json; Invoke-WebRequest -Uri http://localhost:8080/contact -Method POST -ContentType "application/json" -Body $body
