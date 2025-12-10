@@ -10,7 +10,10 @@ try {
     $request = new Request();
     $response = Router::route($request);
 
-    header($response->getHeadersAsString());
+    foreach ($response->getHeaders() as $name => $value) {
+        header("$name: $value");
+    }
+
     http_response_code($response->getStatus());
     echo $response->getContent();
     exit();
