@@ -8,5 +8,35 @@
     "path": "/foobarr",
     "method": "GET",
     "controller": "FoobarrController"
+  },
+  {
+    "path": "/contact",
+    "method": "POST",
+    "controller": "ContactController",
+    "action": "store"
+  },
+  {
+    "path": "/contact",
+    "method": "GET",
+    "controller": "ContactController",
+    "action": "index"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "GET",
+    "controller": "ContactController",
+    "action": "show"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "PATCH",
+    "controller": "ContactController",
+    "action": "update"
+  },
+  {
+    "path": "/contact/{filename}",
+    "method": "DELETE",
+    "controller": "ContactController",
+    "action": "destroy"
   }
 ]

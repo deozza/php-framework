@@ -35,11 +35,55 @@ class Router {
 
 
     private static function checkMethod(Request $request, array $route): bool {
-        return $request->getMethod() === $route['method'];
+        $currentMethod = $request->getMethod();
+        if ($currentMethod === $route['method']) {
+            return true;
+        }
+
+        if ($currentMethod === 'POST') {
+            foreach ($request->getHeaders() as $k => $v) {
+                if (strtolower($k) === 'x-http-method-override' && strtoupper($v) === $route['method']) {
+                    return true;
+                }
+            }
+
+            if (isset($_REQUEST['_method']) && strtoupper($_REQUEST['_method']) === $route['method']) {
+                return true;
+            }
+            if (isset($_GET['_method']) && strtoupper($_GET['_method']) === $route['method']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function checkUri(Request $request, array $route): bool {
-        return $request->getUri() === $route['path'];
+        $requestUri = $request->getUri();
+        $requestPath = parse_url($requestUri, PHP_URL_PATH);
+        $routePath = $route['path'];
+
+        if ($requestPath === $routePath) {
+            return true;
+        }
+        if (strpos($routePath, '{') !== false) {
+            $pattern = preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?P<$1>[^/]+)', $routePath);
+            $pattern = '#^' . $pattern . '$#';
+
+            if (preg_match($pattern, $requestPath, $matches)) {
+                $params = [];
+                foreach ($matches as $key => $value) {
+                    if (!is_int($key)) {
+                        $params[$key] = $value;
+                    }
+                }
+
+                $request->setParams($params);
+                return true;
+            }
+        }
+
+        return false;
     }
     
     private static function getControllerInstance(string $controller): AbstractController {
