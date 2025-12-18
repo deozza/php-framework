@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Controllers;
+namespace App\Controllers\Artist;
 
 use App\Lib\Http\Request;
 use App\Lib\Http\Response;
