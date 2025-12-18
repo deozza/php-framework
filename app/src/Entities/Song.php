@@ -1,12 +1,13 @@
 <?php
 
+
 namespace App\Entities;
 
 use App\Lib\Annotations\ORM\AutoIncrement;
 use App\Lib\Annotations\ORM\Column;
 use App\Lib\Annotations\ORM\Id;
+use App\Lib\Annotations\ORM\ManyToOne;
 use App\Lib\Annotations\ORM\ORM;
-use App\Lib\Annotations\ORM\References;
 use App\Lib\Entities\AbstractEntity;
 use App\Entities\Album;
 
@@ -25,12 +26,12 @@ class Song extends AbstractEntity {
     public \DateTime $releaseDate;
     
     #[Column(type: 'int')]
-    #[References(class: Artist::class, property: 'id')]
-    public string $artist;
+    #[ManyToOne(class: Artist::class, property: 'id')]
+    public int $artist;
     
     #[Column(type: 'int')]
-    #[References(class: Album::class, property: 'id')]
-    public string $album;
+    #[ManyToOne(class: Album::class, property: 'id')]
+    public int $album;
     
     public function getId(): int
     {

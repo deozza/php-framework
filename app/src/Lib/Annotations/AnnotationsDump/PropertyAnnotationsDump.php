@@ -30,6 +30,16 @@ class PropertyAnnotationsDump {
         return array_key_exists($annotation, $this->getAnnotations());
     }
 
+    public function hasAnnotations(array $annotations): bool {
+        foreach($annotations as $annotation) {
+            if($this->hasAnnotation($annotation) === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function getAnnotation(string $annotation): AbstractAnnotation {
         if($this->hasAnnotation($annotation) === false) {
             throw new \Exception('annotation not found in property');
@@ -37,6 +47,7 @@ class PropertyAnnotationsDump {
 
         return $this->getAnnotations()[$annotation];
     }
+    
 }
 
 

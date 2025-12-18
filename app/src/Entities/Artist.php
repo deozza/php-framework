@@ -2,12 +2,14 @@
 
 
 
+
 namespace App\Entities;
 
 use App\Lib\Annotations\ORM\AutoIncrement;
 use App\Lib\Annotations\ORM\Column;
 use App\Lib\Annotations\ORM\Id;
 use App\Lib\Annotations\ORM\ORM;
+use App\Lib\Annotations\ORM\OneToMany;
 use App\Lib\Entities\AbstractEntity;
 
 
@@ -27,6 +29,12 @@ class Artist extends AbstractEntity {
     
     #[Column(type: 'varchar', size: 255)]
     public string $country;
+
+    #[OneToMany(class: Album::class, property: 'id')]
+    public array $albums;
+    
+    #[OneToMany(class: Song::class, property: 'id')]
+    public array $songs;
 
     public function getId(): int
     {

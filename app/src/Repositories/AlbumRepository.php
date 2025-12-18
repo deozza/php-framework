@@ -3,15 +3,15 @@
 
 namespace App\Repositories;
 
-use App\Entities\Artist;
+use App\Entities\Album;
 use App\Lib\Repositories\AbstractRepository;
 
-class ArtistRepository extends AbstractRepository {
+class AlbumRepository extends AbstractRepository {
+    
     public function __construct()
     {
-        parent::__construct(Artist::class);
+        parent::__construct(Album::class);
     }
-    
 }
     
 

@@ -7,7 +7,7 @@ use App\Lib\Annotations\AnnotationsDump\PropertyAnnotationsDump;
 use App\Lib\Annotations\ORM\AutoIncrement;
 use App\Lib\Annotations\ORM\Column;
 use App\Lib\Annotations\ORM\Id;
-use App\Lib\Annotations\ORM\References;
+use App\Lib\Annotations\ORM\ManyToOne;
 use App\Lib\Database\DatabaseConnexion;
 use App\Lib\Database\Dsn;
 use App\Lib\Entities\AbstractEntity;
@@ -35,15 +35,15 @@ class CreateSchema extends AbstractCommand {
             		continue;
             	}
 
-            	if($class->propertiesHaveAnnotation(References::class) === false) {
+            	if($class->propertiesHaveAnnotation(ManyToOne::class) === false) {
             		$sortedClassesAnnotationsDump[$class->getName()] = $class;
             	    continue;
             	}
 	
-            	$referencesCount = count($class->getPropertiesWithAnnotation(References::class));
+            	$referencesCount = count($class->getPropertiesWithAnnotation(ManyToOne::class));
             	foreach($sortedClassesAnnotationsDump as $name => $weightedClass) {
-            	    foreach($class->getPropertiesWithAnnotation(References::class) as $property) {
-            	        if($name === $property->getAnnotation(References::class)->class) {
+            	    foreach($class->getPropertiesWithAnnotation(ManyToOne::class) as $property) {
+            	        if($name === $property->getAnnotation(ManyToOne::class)->class) {
                 			$referencesCount--;
             	        }
             	    }
@@ -57,8 +57,7 @@ class CreateSchema extends AbstractCommand {
         }
 
         foreach($sortedClassesAnnotationsDump as $classAnnotionsDump) {
-            $properties = $classAnnotionsDump->getProperties();
-            $properties = self::sanitizeProperties($properties);
+            $properties = $classAnnotionsDump->getPropertiesWithAnnotation(Column::class);
 
             $statement .= self::getSqlCreateTableScript($classAnnotionsDump->getName(), $properties);
             $statement .= PHP_EOL;
@@ -152,22 +151,13 @@ class CreateSchema extends AbstractCommand {
 
         $statement .= ',';
 
-        if($propertyAnnotationsDump->hasAnnotation(References::class) === true) {
-            $reflector = new \ReflectionClass($propertyAnnotationsDump->getAnnotation(References::class)->class);
+        if($propertyAnnotationsDump->hasAnnotation(ManyToOne::class) === true) {
+            $reflector = new \ReflectionClass($propertyAnnotationsDump->getAnnotation(ManyToOne::class)->class);
             $statement .= PHP_EOL;
-            $statement .= 'FOREIGN KEY (' . $propertyName . ') REFERENCES ' . pathinfo($reflector->getFileName(), PATHINFO_FILENAME) . '(' .$propertyAnnotationsDump->getAnnotation(References::class)->property  . '),';
+            $statement .= 'FOREIGN KEY (' . $propertyName . ') REFERENCES ' . pathinfo($reflector->getFileName(), PATHINFO_FILENAME) . '(' .$propertyAnnotationsDump->getAnnotation(ManyToOne::class)->property  . '),';
         }
 
         return $statement;
     }
     
-    private static function sanitizeProperties(array $properties): array {
-        foreach($properties as $key=>$property) {
-            if($property->hasAnnotation(Column::class) === false) {
-                unset($properties[$key]);
-            }
-        }
-
-        return $properties;
-    }
 }
